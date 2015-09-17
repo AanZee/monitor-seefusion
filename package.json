@@ -14,8 +14,8 @@
   "author": "Rick Groenewegen",
   "license": "ISC",
   "dependencies": {
-    "http": "0.0.0",
-    "monitor-response": "git+https://aanzee.git.beanstalkapp.com/monitor-response.git",
+   "monitor-response": "git+https://aanzee.git.beanstalkapp.com/monitor-response.git",
+    "request": "^2.62.0",
     "xml2js": "^0.4.12"
   }
 }

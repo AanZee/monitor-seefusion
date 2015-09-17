@@ -1,15 +1,9 @@
 exports.isMonitoringModule = true;
 exports.hasCron = true;
 
-var http = require("http");
+var request = require("request");
 var responseMessaging = require('monitor-response');
 var parseString = require('xml2js').parseString;
-
-exports.getRoutes = function () {
-	return [
-		{method: 'GET', pattern: '/diskspace', function: getRouteData}
-	];
-}
 
 exports.executeCron = function (callback) {
     getSeeFusionData(function(err, data){
@@ -69,29 +63,15 @@ var parseCounters = function(counters,type) {
 }
 
 var getSeeFusionData = function(callback){
-
-    var options = {
-        host: 'ws1.aanzee.nl',
-        port: 9002,
-        path: '/xml',
+   
+    request({
         method: 'GET',
-        headers: {
-            'Content-Type': 'application/xml'
-        }
-    };
-    
-    var req = http.request(options, function(res)
-    {
-        var output = '';
-        res.setEncoding('utf8');
-
-        res.on('data', function (chunk) {
-            output += chunk;
-        });
-
-        res.on('end', function() {
-
-            parseString(output, function (err, result) {
+        url: exports.config.endpoint || 'http://localhost:9002/xml'
+    },
+    function (err, response, data) {
+        
+        if (!err && response.statusCode == 200) {
+            parseString(data, function (err, result) {
 
                 var seefusion = result.seefusioninfo;
                 var server = seefusion.server[0];
@@ -115,22 +95,8 @@ var getSeeFusionData = function(callback){
                 }
 
                 callback(returnObj);
+
             });
-
-        });
+        }
     });
-   
-    req.end();
-
-}
-
-var getRouteData = function(req, res, next) {
-
-    getSeeFusionData(function(err, data){
-        if(err)
-            res.json(responseMessaging.format(500, {}, [err]));
-        else
-            res.json(responseMessaging.format(200, data));  
-    });
-
 }
