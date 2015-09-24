@@ -2,7 +2,6 @@ exports.isMonitoringModule = true;
 exports.hasCron = true;
 
 var request = require("request");
-var responseMessaging = require('monitor-response');
 var parseString = require('xml2js').parseString;
 
 exports.executeCron = function (callback) {
@@ -69,9 +68,13 @@ var getSeeFusionData = function(callback){
         url: exports.config.endpoint || 'http://localhost:9002/xml'
     },
     function (err, response, data) {
+        if(err)
+            callback(err);
         
         if (!err && response.statusCode == 200) {
             parseString(data, function (err, result) {
+                if(err)
+                    callback(err);
 
                 var seefusion = result.seefusioninfo;
                 var server = seefusion.server[0];
@@ -94,7 +97,7 @@ var getSeeFusionData = function(callback){
                     "totalAvailable": memory.available[0],
                 }
 
-                callback(returnObj);
+                callback(null, returnObj);
 
             });
         }
