@@ -93,8 +93,9 @@ var getSeeFusionData = function(callback){
                          "10": parseCounters(seefusion.counters,10),
                          "60": parseCounters(seefusion.counters,60)
                     },
-                    "totalMemory": memory.currentmax[0],
-                    "totalAvailable": memory.available[0],
+                    "totalMemory": parseFloat(memory.currentmax[0]),
+                    "totalAvailable": parseFloat(memory.available[0]),
+                    "usedPercentageMemory": ((parseFloat(memory.currentmax[0]) - parseFloat(memory.available[0])) / parseFloat(memory.currentmax[0])) * 100
                 }
 
                 callback(null, returnObj);
